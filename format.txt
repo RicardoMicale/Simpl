@@ -1,0 +1,53 @@
+//  TEST SNIPPET
+
+const int multiplier = 3
+
+func add(int x, int y) {
+  return (x + y) * multiplier
+}
+
+add(2, 4)
+
+//  VARIABLE DECLARATION
+const int x = 2
+var string y = "hello world"
+
+//  LOGIC OPERATORS (AND, OR, NOT, NOT EQUALS, EQUALS)
+and -> &&
+or -> ||
+not equals -> !=
+equals -> ==
+
+//  OPERATIONS
+add -> +
+subtract -> -
+multiply -> *
+divide -> /
+divide exactly -> //
+modulo -> %
+power -> **
+
+//  IF-ELSE-ELSE IF STATEMENTS
+if (condition) {}
+else if (condition) {}
+else {}
+
+//  FOR AND WHILE LOOPS
+for i in array {}
+while (condition) {}
+
+//  DECLARING FUNCTIONS
+func do_something(<data_type> parameter_1, <data_type> parameter_2) {}
+
+//  CALLING FUNCTION
+do_something(parameter_1, parameter_2)
+
+//  DECLARING A CLASS
+class ObjectName() {}
+
+//  INSTANTIATING A CLASS
+ObjectName z = new ObjectName(attribute_1, attribute_2)
+
+//  TRY CATCH
+
+//  ASYNC AWAIT
