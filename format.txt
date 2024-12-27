@@ -1,12 +1,12 @@
 //  TEST SNIPPET
 
-const int multiplier = 3
+const int multiplier = 3;
 
-func add(int x, int y) {
-  return (x + y) * multiplier
+func int add(int x, int y) {
+  return (x + y) * multiplier;
 }
 
-add(2, 4)
+const int sum = add(2, 4);
 
 //  VARIABLE DECLARATION
 const int x = 2

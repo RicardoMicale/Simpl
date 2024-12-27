@@ -63,6 +63,7 @@ const (
 	FALSE = "FALSE"
 )
 
+//	keywords dictionary to keep track of reserved words
 var keywords = map[string]TokenType {
 	"func": FUNCTION,
 	"const": CONST,
@@ -80,9 +81,11 @@ var keywords = map[string]TokenType {
 }
 
 func LookupIdent(ident string) TokenType {
+	//	checks if the token is in the keywords dictionary
 	if tok, ok := keywords[ident]; ok {
+		//	with tok being the token and ok being a boolean indicating if the token is or not in the dictionary
 		return tok
 	}
-
+	//	if it is not, returns the an identifier token
 	return IDENTIFIER
 }
