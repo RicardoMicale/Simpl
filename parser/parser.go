@@ -30,6 +30,7 @@ var precedences = map[token.TokenType]int{
 	token.MINUS: SUM,
 	token.DIVIDE: PRODUCT,
 	token.MULTIPLY: PRODUCT,
+	token.L_PAREN: CALL,
 }
 
 type (
@@ -65,6 +66,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.FALSE, p.parseBoolean)
 	p.registerPrefix(token.L_PAREN, p.parseGroupedExpression)
 	p.registerPrefix(token.IF, p.parseIfExpression)
+	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 
 	//	makes infix functions
 	p.infixParseFuncs = make(map[token.TokenType]infixParseFunc)
@@ -76,9 +78,91 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.NOT_EQUALS, p.parseInfixExpression)
 	p.registerInfix(token.LESS_THAN, p.parseInfixExpression)
 	p.registerInfix(token.GREATER_THAN, p.parseInfixExpression)
+	p.registerInfix(token.L_PAREN, p.parseCallExpression)
 
 	//	returns the parser
 	return p
+}
+
+func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {
+	expression := &ast.CallExpression{ Token: p.currentToken, Function: function }
+	expression.Arguments = p.parseCallArguments()
+	return expression
+}
+
+func (p *Parser) parseCallArguments() []ast.Expression {
+	args := []ast.Expression{}
+
+	if p.peekTokenIs(token.R_PAREN) {
+		//	if the next token after the ( is a ), the function call takes no arguments
+		p.nextToken()
+		return args
+	}
+
+	p.nextToken()
+	args = append(args, p.parseExpression(LOWEST))
+
+	for p.peekTokenIs(token.COMMA) {
+		//	skips the comma
+		p.nextToken()
+		p.nextToken()
+		//	appends the expression to the argument list
+		args = append(args, p.parseExpression(LOWEST))
+	}
+	//	checks if the next token is a )
+	if !p.expectPeek(token.R_PAREN) {
+		return nil
+	}
+
+	return args
+}
+
+func (p *Parser) parseFunctionLiteral() ast.Expression {
+	literal := &ast.FunctionLiteral{ Token: p.currentToken }
+	//	checks that the next token after the func declaration is a (
+	if !p.expectPeek(token.L_PAREN) {
+		return nil
+	}
+	//	parses the function parameters
+	literal.Parameters = p.parseFunctionParameters()
+	//	checks that the funcion opens brackets
+	if !p.expectPeek(token.L_BRACE) {
+		return nil
+	}
+	//	parses the body of the function expecting a block statement
+	literal.Body = p.parseBlockStatement()
+	//	returns the function literal
+	return literal
+}
+
+func (p *Parser) parseFunctionParameters() []*ast.Identifier {
+	identifiers := []*ast.Identifier{}
+	//	if the next token is a ), the function has no parameters and returns an empty parameter list
+	if p.peekTokenIs(token.R_PAREN) {
+		p.nextToken()
+		return identifiers
+	}
+	//	otherwise goes to next token
+	p.nextToken()
+	//	creates the identifier
+	identifier := &ast.Identifier{ Token: p.currentToken, Value: p.currentToken.Literal }
+	//	appends to the identifier list
+	identifiers = append(identifiers, identifier)
+	//	loops until a comma is not found
+	for p.peekTokenIs(token.COMMA) {
+		//	skips the comma and places the current token as the next parameter
+		p.nextToken()
+		p.nextToken()
+		//	creates the next identifier and appends to the parameter list
+		identifier := &ast.Identifier{ Token: p.currentToken, Value: p.currentToken.Literal }
+		identifiers = append(identifiers, identifier)
+	}
+	//	if the next token after the parameters is not a ), return a nil value
+	if !p.expectPeek(token.R_PAREN) {
+		return nil
+	}
+
+	return identifiers
 }
 
 func (p *Parser) parseBlockStatement() *ast.BlockStatement {
