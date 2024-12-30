@@ -4,7 +4,7 @@ type ObjectType string
 
 type Object interface {
 	Type() ObjectType
-	Inpect() string
+	Inspect() string
 }
 
 const (
@@ -15,5 +15,5 @@ const (
 
 type Null struct {}
 
-func (n *Null) Inspect() string { return "null" }
 func (n *Null) Type() ObjectType { return NULL_OBJECT }
+func (n *Null) Inspect() string { return "null" }
