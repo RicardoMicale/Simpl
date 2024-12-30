@@ -52,18 +52,46 @@ func TestConstStatements(t *testing.T) {
 
 	//	declares the tests to try
 	tests := []struct {
+		input string
 		expectedIdentifier string
+		expectedValue interface{}
 	} {
-		{"x"},
-		{"y"},
-		{"z"},
+		{
+			"const int x = 5;", "x", 5,
+		},
+		{
+			"const bool y = true;", "y", true,
+		},
+		{
+			"const bool z = y;", "z", "y",
+		},
 	}
 
 	//	loops through the tests
-	for i, tt := range tests {
-		statement := program.Statements[i]
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+
+		program := p.ParserProgram()
+		checkParserErrors(t, p)
+
+		if len(program.Statements) != 1 {
+			t.Fatalf(
+				"program.Statements does not have %d elements, received %d",
+				1,
+				len(program.Statements),
+			)
+		}
+
+		statement := program.Statements[0]
 
 		if !testConstStatements(t, statement, tt.expectedIdentifier) {
+			return
+		}
+
+		value := statement.(*ast.ConstStatement).Value
+
+		if !testLiteralExpression(t, value, tt.expectedValue) {
 			return
 		}
 	}
@@ -97,18 +125,47 @@ func TestVarStatements(t *testing.T) {
 
 	//	declares the tests to try
 	tests := []struct {
+		input string
 		expectedIdentifier string
+		expectedType string
+		expectedValue interface{}
 	} {
-		{"x"},
-		{"y"},
-		{"z"},
+		{
+			"var int x = 5;", "x", "int", 5,
+		},
+		{
+			"var bool y = true;", "y", "bool", true,
+		},
+		{
+			"var bool z = y;", "z", "bool", "y",
+		},
 	}
 
 	//	loops through the tests
-	for i, tt := range tests {
-		statement := program.Statements[i]
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+
+		program := p.ParserProgram()
+		checkParserErrors(t, p)
+
+		if len(program.Statements) != 1 {
+			t.Fatalf(
+				"program.Statements does not have %d elements, received %d",
+				1,
+				len(program.Statements),
+			)
+		}
+
+		statement := program.Statements[0]
 
 		if !testVarStatements(t, statement, tt.expectedIdentifier) {
+			return
+		}
+
+		value := statement.(*ast.VarStatement).Value
+
+		if !testLiteralExpression(t, value, tt.expectedValue) {
 			return
 		}
 	}
@@ -856,7 +913,7 @@ func testVarStatements(t *testing.T, statement ast.Statement, name string) bool 
 	}
 
 	if varStatement.Name.TokenLiteral() != name {
-		t.Errorf("constStatement.Name not %s. got %s", name, varStatement.Name)
+		t.Errorf("varStatement.Name not %s. got %s", name, varStatement.Name)
 		return false
 	}
 

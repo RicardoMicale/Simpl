@@ -5,36 +5,40 @@ import (
 	"fmt"
 	"io"
 	"language/lexer"
-	"language/token"
+	"language/parser"
 )
 
-const PROMPT = ">>"
+const PROMPT = ">> "
 
 func Start(in io.Reader, out io.Writer) {
-	//	creates a scanner object
 	scanner := bufio.NewScanner(in)
 
 	for {
-		//	prints the prompt
-		fmt.Println(PROMPT)
+		fmt.Print(PROMPT)
 
-		//	calls the function to scan the user input
 		scanned := scanner.Scan()
 
-		//	if the value entered is null make an early return
 		if !scanned {
 			return
 		}
-
-		//	reads the text from the user
 		line := scanner.Text()
 
-		//	creates a Lexer object with the user text as the input
 		l := lexer.New(line)
+		p := parser.New(l)
+		program := p.ParserProgram()
 
-		//	initializes the lexer tokens and loops until the token is an EOF type
-		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
-			fmt.Printf("%+v\n", tok)
+		if len(p.Errors()) != 0 {
+			printParserErrors(out, p.Errors())
+			continue
 		}
+
+		io.WriteString(out, program.String())
+		io.WriteString(out, "\n")
+	}
+}
+
+func printParserErrors(out io.Writer, errors []string) {
+	for _, msg := range errors {
+		io.WriteString(out, "\t"+msg+"\n")
 	}
 }

@@ -331,18 +331,17 @@ func (p *Parser) parseConstStatement() *ast.ConstStatement {
 	statement := &ast.ConstStatement{ Token: p.currentToken}
 	//	helper variable with data type tokens
 	dataTypes := []token.TokenType{token.INT, token.STRING, token.DOUBLE, token.BOOL}
-	//	used to flag if the data type is not specified
-	dataTypeFlag := true
+	//	used to store the data type
+	var foundType token.TokenType
 	//	checks if the next token is a data type token
 	for _, dataType := range dataTypes  {
-		if p.expectPeek(dataType) {
-			dataTypeFlag = false
+		if p.peekToken.Type == dataType {
+			foundType = dataType
 			break //	once a valid data type is found, break the loop
 		}
 	}
-	//	if the flag is true, it did not find any data type specified
-	//	therefore it is not a valid statement
-	if dataTypeFlag {
+	//	if the type is not found, it is not a valid statement
+	if !p.expectPeek(foundType) {
 		return nil
 	}
 
@@ -357,8 +356,11 @@ func (p *Parser) parseConstStatement() *ast.ConstStatement {
 	if !p.expectPeek(token.ASSIGN) {
 		return nil
 	}
+	//	goes to the next token
+	p.nextToken()
+	//	sets the value for the variable
+	statement.Value = p.parseExpression(LOWEST)
 
-	//	TODO Skipping expressions until we find a semicolon
 	for !p.currentTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
@@ -371,18 +373,17 @@ func (p *Parser) parseVarStatement() *ast.VarStatement {
 	statement := &ast.VarStatement{ Token: p.currentToken}
 	//	helper variable with data type tokens
 	dataTypes := []token.TokenType{token.INT, token.STRING, token.DOUBLE, token.BOOL}
-	//	used to flag if the data type is not specified
-	dataTypeFlag := true
+	//	used to store the data type
+	var foundType token.TokenType
 	//	checks if the next token is a data type token
 	for _, dataType := range dataTypes  {
-		if p.expectPeek(dataType) {
-			dataTypeFlag = false
+		if p.peekToken.Type == dataType {
+			foundType = dataType
 			break //	once a valid data type is found, break the loop
 		}
 	}
-	//	if the flag is true, it did not find any data type specified
-	//	therefore it is not a valid statement
-	if dataTypeFlag {
+	//	if the type is not found, it is not a valid statement
+	if !p.expectPeek(foundType) {
 		return nil
 	}
 
@@ -397,8 +398,11 @@ func (p *Parser) parseVarStatement() *ast.VarStatement {
 	if !p.expectPeek(token.ASSIGN) {
 		return nil
 	}
+	//	goes to the next token
+	p.nextToken()
+	//	sets the value for the variable
+	statement.Value = p.parseExpression(LOWEST)
 
-	//	TODO Skipping expressions until we find a semicolon
 	for !p.currentTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
@@ -412,6 +416,8 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 
 	//	goes to the next token
 	p.nextToken()
+	//	sets the return value
+	statement.ReturnValue = p.parseExpression(LOWEST)
 
 	for !p.currentTokenIs(token.SEMICOLON) {
 		p.nextToken()
