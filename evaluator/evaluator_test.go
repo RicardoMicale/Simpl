@@ -236,6 +236,62 @@ func TestConstStatements(t *testing.T) {
 	}
 }
 
+func TestFunctionObject(t *testing.T) {
+	input := "func(x) { x + 2; };"
+
+	evaluated := testEval(input)
+	fn, ok := evaluated.(*object.Function)
+
+	if !ok {
+		t.Fatalf("object is not a Function, got %T", evaluated)
+	}
+
+	if len(fn.Parameters) != 1 {
+		t.Fatalf("function has wrong parameters. Parameters (%+v)", fn.Parameters)
+	}
+
+	if fn.Parameters[0].String() != "x" {
+		t.Fatalf("parameter is not x, got %q", fn.Parameters[0])
+	}
+
+	expectedBody := "(x + 2)"
+
+	if fn.Body.String() != expectedBody {
+		t.Fatalf("body is not %q, got %q", expectedBody, fn.Body.String())
+	}
+}
+
+func TestFunctionApplication(t *testing.T) {
+	tests := []struct{
+		input string
+		expected int64
+	}{
+		{"const int identity = func(x) { x; }; identity(5);", 5},
+		{"const int identity = func(x) { return x; }; identity(5);", 5},
+		{"const int multiply = func(x) { x * 2; }; multiply(5);", 10},
+		{"const int add = func(x, y) { x + y; }; add(5, 5);", 10},
+		{"const int add = func(x, y) { x + y; }; add(5 + 5, add(5, 5));", 20},
+		{"func(x) { x; }(5)", 5},
+	}
+
+	for _, tt := range tests {
+		testIntegerObject(t, testEval(tt.input), tt.expected)
+	}
+}
+
+func TestClosures(t *testing.T) {
+	input := `
+		const int adder = func(x) {
+			func(y) { x + y; };
+		};
+
+		const int addTwo = adder(2);
+		addTwo(2);
+	`
+
+	testIntegerObject(t, testEval(input), 4)
+}
+
 func testEval(input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)
