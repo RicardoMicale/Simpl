@@ -1,1 +1,1 @@
-New language
+Simpl Programming language

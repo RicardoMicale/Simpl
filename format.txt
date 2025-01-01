@@ -1,12 +1,12 @@
 //  TEST SNIPPET
 
-const int multiplier = 3;
+var int multiplier = 3;
 
 func int add(int x, int y) {
   return (x + y) * multiplier;
 }
 
-const int sum = add(2, 4);
+var int sum = add(2, 4);
 
 //  VARIABLE DECLARATION
 const int x = 2
