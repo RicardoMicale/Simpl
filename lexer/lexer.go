@@ -98,6 +98,17 @@ func (l *Lexer) peekChar() byte {
 	}
 }
 
+func (l *Lexer) readString() string {
+	position := l.position + 1
+	for {
+		l.readChar()
+		if l.ch == '"' || l.ch == 0 {
+			break
+		}
+	}
+	return l.input[position:l.position]
+}
+
 func (l *Lexer) NextToken() token.Token {
 	//	creates a token variable uninitialized
 	var tok token.Token
@@ -189,6 +200,9 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.L_BRACK, l.ch)
 	case ']':
 		tok = newToken(token.R_BRACK, l.ch)
+	case '"':
+		tok.Type = token.STRING
+		tok.Literal = l.readString()
 	case 0:
 		//	when a zero is found, it means it is the end of the file
 		//	the token literal is an empty string and the type is an End Of File (EOF)
