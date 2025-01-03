@@ -134,6 +134,23 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	}
 }
 
+func evalStringInfixExpression(operator string, left, right object.Object) object.Object {
+	//	gets both values
+	leftVal := left.(*object.String).Value
+	rightVal := right.(*object.String).Value
+	switch operator {
+	case "==":
+		return nativeBoolToBooleaObject(leftVal == rightVal)
+	case "!=":
+		return nativeBoolToBooleaObject(leftVal != rightVal)
+	case "+":
+		//	creates the object with the concatenated strings
+		return &object.String{ Value: leftVal + rightVal }
+	default:
+		return newError("Unknown operator: %s %s %s", left.Type(), operator, right.Type())
+	}
+}
+
 func evalInfixExpression(
 	operator string,
 	left, right object.Object,
@@ -141,6 +158,8 @@ func evalInfixExpression(
 	switch {
 	case left.Type() == object.INTEGER_OBJECT && right.Type() == object.INTEGER_OBJECT:
 		return evalIntegerInfixExpression(operator, left, right)
+	case left.Type() == object.STRING_OBJECT && right.Type() == object.STRING_OBJECT:
+		return evalStringInfixExpression(operator, left, right)
 	case operator == "==":
 		return nativeBoolToBooleaObject(left == right)
 	case operator == "!=":
@@ -312,6 +331,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 
 		return applyFunction(function, args)
+	case *ast.StringLiteral:
+		return &object.String{ Value: node.Value }
 	}
 
 	return nil
