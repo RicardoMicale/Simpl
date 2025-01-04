@@ -315,18 +315,36 @@ func TestStringLiteral(t *testing.T) {
 	}
 }
 
-func TestStringConcatenation(t *testing.T) {
-	input := `"Hello" + " " + "World!"`
-
-	evaluated := testEval(input)
-	str, ok := evaluated.(*object.String)
-
-	if !ok {
-		t.Fatalf("object is not String, got %T", evaluated)
+func TestBuiltInFunctions(t *testing.T) {
+	tests := []struct{
+		input string
+		expected interface{}
+	}{
+		{`length("")`, 0},
+		{`length("four")`, 4},
+		{`length("Hello World")`, 11},
+		{`length(1)`, "Argument to `length` not supported, got INTEGER"},
+		{`length("one", "two")`, "Wrong number of arguments, expected 1, got 2"},
 	}
 
-	if str.Value != "Hello World!" {
-		t.Errorf("Got the wrong value, %q", str.Value)
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+
+		switch expected := tt.expected.(type) {
+		case int:
+			testIntegerObject(t, evaluated, int64(expected))
+		case string:
+			errObj, ok := evaluated.(*object.Error)
+
+			if !ok {
+				t.Errorf("Object is not error, got %T, (%+v)", evaluated, evaluated)
+				continue
+			}
+
+			if errObj.Message != expected {
+				t.Errorf("Wrong error message, Expected %q, got %q", expected, errObj.Message)
+			}
+		}
 	}
 }
 
