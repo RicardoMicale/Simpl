@@ -68,6 +68,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.IF, p.parseIfExpression)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
+	p.registerPrefix(token.L_BRACK, p.parseArrayLiteral)
 
 	//	makes infix functions
 	p.infixParseFuncs = make(map[token.TokenType]infixParseFunc)
@@ -85,13 +86,49 @@ func New(l *lexer.Lexer) *Parser {
 	return p
 }
 
+func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
+	list := []ast.Expression{}
+	//	if the immediate next token is a right bracket (]) it is an empty list
+	if p.peekTokenIs(end) {
+		p.nextToken()
+		return list
+	}
+
+	//	goes to next token and appends the first element
+	p.nextToken()
+	list = append(list, p.parseExpression(LOWEST))
+	//	loops until there is no comma, indicating the end of the elements to parse
+	for p.peekTokenIs(token.COMMA) {
+		//	skips the comma and goes to the next element
+		p.nextToken()
+		p.nextToken()
+		//	parses the expression and adds it to the elements list
+		list = append(list, p.parseExpression(LOWEST))
+	}
+
+	//	if the expected token is not the specified end token, return a nil value
+	if !p.expectPeek(end) {
+		return nil
+	}
+	//	returns the expression list
+	return list
+}
+
+func (p *Parser) parseArrayLiteral() ast.Expression {
+	array := &ast.ArrayLiteral{ Token: p.currentToken }
+
+	array.Elements = p.parseExpressionList(token.R_BRACK)
+
+	return array
+}
+
 func (p *Parser) parseStringLiteral() ast.Expression {
 	return &ast.StringLiteral{ Token: p.currentToken, Value: p.currentToken.Literal }
 }
 
 func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {
 	expression := &ast.CallExpression{ Token: p.currentToken, Function: function }
-	expression.Arguments = p.parseCallArguments()
+	expression.Arguments = p.parseExpressionList(token.R_PAREN)
 	return expression
 }
 
@@ -335,7 +372,7 @@ func (p *Parser) parseConstStatement() *ast.ConstStatement {
 	//	creates the statement object and assigns its memory address to a variable
 	statement := &ast.ConstStatement{ Token: p.currentToken}
 	//	helper variable with data type tokens
-	dataTypes := []token.TokenType{token.INT, token.STRING, token.DOUBLE, token.BOOL}
+	dataTypes := []token.TokenType{token.INT, token.STRING, token.DOUBLE, token.BOOL, token.ARRAY}
 	//	used to store the data type
 	var foundType token.TokenType
 	//	checks if the next token is a data type token

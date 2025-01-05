@@ -889,6 +889,33 @@ func TestStringLiterals(t *testing.T) {
 	}
 }
 
+func TestArrayLiterals(t *testing.T) {
+	input := "[1, 2, 3, 4, 5]"
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParserProgram()
+	checkParserErrors(t, p)
+
+	statement, ok := program.Statements[0].(*ast.ExpressionStatement)
+	array, ok := statement.Expression.(*ast.ArrayLiteral)
+
+	if !ok {
+		t.Fatalf("expression not ast.ArrayLiteral, got %T", statement.Expression)
+	}
+
+	if len(array.Elements) != 5 {
+		t.Fatalf("len(array.Elements) not 3, got %d", len(array.Elements))
+	}
+
+	testIntegerLiteral(t, array.Elements[0], 1)
+	testIntegerLiteral(t, array.Elements[1], 2)
+	testIntegerLiteral(t, array.Elements[2], 3)
+	testIntegerLiteral(t, array.Elements[3], 4)
+	testIntegerLiteral(t, array.Elements[4], 5)
+}
+
 func testConstStatements(t *testing.T, statement ast.Statement, name string) bool {
 	if statement.TokenLiteral() != "const" {
 		t.Errorf("statement.TokenLiteral() not const. got %s", statement.TokenLiteral())
