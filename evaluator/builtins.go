@@ -80,8 +80,8 @@ var builtins = map[string]*object.BuiltIn{
 			newElements[length] = args[1]
 			//	reassigns the newElements array to the Elements attribute of the original array
 			arr.Elements = newElements
-			//	returns null
-			return NULL
+			//	returns the same array
+			return arr
 		},
 	},
 	"removeLast": {
@@ -104,12 +104,12 @@ var builtins = map[string]*object.BuiltIn{
 			newElements := arr.Elements[:length - 1]
 			//	reassigns the newElements array to the Elements attribute of the original array
 			arr.Elements = newElements
-			//	returns null
-			return NULL
+			//	returns the same array
+			return arr
 		},
 	},
-	"removeAt": &object.BuiltIn{},
-	"copy": &object.BuiltIn{
+	"removeAt": {},
+	"copy": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("Wrong number of arguments. Got %d, expected 1", len(args))

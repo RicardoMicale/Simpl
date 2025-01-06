@@ -71,6 +71,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
 	p.registerPrefix(token.L_BRACK, p.parseArrayLiteral)
+	p.registerPrefix(token.L_BRACE, p.parseMapLiteral)
 
 	//	makes infix functions
 	p.infixParseFuncs = make(map[token.TokenType]infixParseFunc)
@@ -87,6 +88,43 @@ func New(l *lexer.Lexer) *Parser {
 
 	//	returns the parser
 	return p
+}
+
+func (p *Parser) parseMapLiteral() ast.Expression {
+	//	creates the map
+	hash := &ast.MapLiteral{ Token: p.currentToken }
+	//	defines the pairs map as an empty map
+	hash.Pairs = make(map[ast.Expression]ast.Expression)
+	//	loops the expressions until a } is found
+	for !p.peekTokenIs(token.R_BRACE) {
+		//	goes to the next token (or the next key)
+		p.nextToken()
+		//	parses the key
+		key := p.parseExpression(LOWEST)
+		//	if the token after the key is not a colon (:)
+		//	return null as it is an invalid map
+		if !p.expectPeek(token.COLON) {
+			return nil
+		}
+		//	goes to the next token (or the value)
+		p.nextToken()
+		//	parses the value
+		value := p.parseExpression(LOWEST)
+		//	asigns the value to the key
+		hash.Pairs[key] = value
+		//	if the next token is not a } or a ,
+		//	return nil as it is an invalid map
+		if !p.peekTokenIs(token.R_BRACE) && !p.expectPeek(token.COMMA) {
+			return nil
+		}
+	}
+	//	if the next token is not a }
+	//	return nil as it is an invalid map
+	if !p.expectPeek(token.R_BRACE) {
+		return nil
+	}
+	//	returns the map
+	return hash
 }
 
 func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
@@ -389,7 +427,14 @@ func (p *Parser) parseConstStatement() *ast.ConstStatement {
 	//	creates the statement object and assigns its memory address to a variable
 	statement := &ast.ConstStatement{ Token: p.currentToken}
 	//	helper variable with data type tokens
-	dataTypes := []token.TokenType{token.INT, token.STRING, token.DOUBLE, token.BOOL, token.ARRAY}
+	dataTypes := []token.TokenType{
+		token.INT,
+		token.STRING,
+		token.DOUBLE,
+		token.BOOL,
+		token.ARRAY,
+		token.MAP,
+	}
 	//	used to store the data type
 	var foundType token.TokenType
 	//	checks if the next token is a data type token

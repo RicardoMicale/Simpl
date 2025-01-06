@@ -61,6 +61,7 @@ const (
 	ELSE = "ELSE"
 	TRUE = "TRUE"
 	FALSE = "FALSE"
+	MAP = "MAP"
 )
 
 //	keywords dictionary to keep track of reserved words
@@ -78,6 +79,7 @@ var keywords = map[string]TokenType {
 	"else": ELSE,
 	"true": TRUE,
 	"false": FALSE,
+	"map": MAP,
 }
 
 func LookupIdent(ident string) TokenType {
