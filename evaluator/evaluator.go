@@ -264,6 +264,31 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 	}
 }
 
+func evalArrayIndexExpression(array, index object.Object) object.Object {
+	//	gets the array object
+	arrayObject := array.(*object.Array)
+	//	gets the index
+	idx := index.(*object.Integer).Value
+	//	gets the length of the array passed
+	max := int64(len(arrayObject.Elements) - 1)
+	//	checks if the index requested is between 0 and the length of the array
+	//	if so, the index is out of range and returns null
+	if idx < 0 || idx > max {
+		return NULL
+	}
+	//	returns the object at that position
+	return arrayObject.Elements[idx]
+}
+
+func evalIndexExpression(left, index object.Object) object.Object {
+	switch {
+	case left.Type() == object.ARRAY_OBJECT && index.Type() == object.INTEGER_OBJECT:
+		return evalArrayIndexExpression(left, index)
+	default:
+		return newError("Index operator not supported: %s", left.Type())
+	}
+}
+
 func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
 	//	Statements
@@ -345,6 +370,18 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 
 		return &object.Array{ Elements: elements }
+	case *ast.IndexExpression:
+		left := Eval(node.Left, env)
+		if isError(left) {
+			return left
+		}
+
+		index := Eval(node.Index, env)
+		if isError(index) {
+			return index
+		}
+
+		return evalIndexExpression(left, index)
 	}
 
 	return nil
