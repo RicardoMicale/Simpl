@@ -426,6 +426,54 @@ func TestArrayIndexExpressions(t *testing.T) {
 	}
 }
 
+func TestMapLiterals(t *testing.T) {
+	input := `
+		const string two = "two";
+		{
+			"one": 10 - 9,
+			two: 1 + 1,
+			"thr" + "ee": 6 /2,
+			4: 4,
+			true: 5,
+			false: 6
+		}
+	`
+
+	evaluated := testEval(input)
+	result, ok := evaluated.(*object.Map)
+
+	if !ok {
+		t.Fatalf("Eval did not return a Map. Got %T (%+v)", evaluated, evaluated)
+	}
+
+	expected := map[object.MapKey]int64{
+		(&object.String{ Value: "one" }).MapKey(): 1,
+		(&object.String{ Value: "two" }).MapKey(): 2,
+		(&object.String{ Value: "three" }).MapKey(): 3,
+		(&object.Integer{ Value: 4 }).MapKey(): 4,
+		TRUE.MapKey(): 5,
+		FALSE.MapKey(): 6,
+	}
+
+	if len(result.Pairs) != len(expected) {
+		t.Fatalf(
+			"Map has wrong number of pairs. Got %d, expected %d",
+			len(result.Pairs),
+			len(expected),
+		)
+	}
+
+	for expectedKey, expectedValue := range expected {
+		pair, ok := result.Pairs[expectedKey]
+
+		if !ok {
+			t.Errorf("No pair found for given key in pairs")
+		}
+
+		testIntegerObject(t, pair.Value, expectedValue)
+	}
+}
+
 func testEval(input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)

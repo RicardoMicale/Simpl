@@ -289,6 +289,36 @@ func evalIndexExpression(left, index object.Object) object.Object {
 	}
 }
 
+func evalMapLiteral(node *ast.MapLiteral, env *object.Environment) object.Object {
+	pairs := make(map[object.MapKey]object.MapPair)
+
+	for keyNode, valueNode := range node.Pairs {
+		//	evaluating that the key is valid
+		key := Eval(keyNode, env)
+		if isError(key) {
+			return key
+		}
+		//	checking that the key conforms to mapable
+		mapKey, ok := key.(object.Mapable)
+		//	if not, throw an error
+		if !ok {
+			return newError("Unusable as a map key: %s", key.Type())
+		}
+		//	evaluating that the value is valid
+		value := Eval(valueNode, env)
+		//	if not throw an error
+		if isError(value) {
+			return value
+		}
+		//	gets the map key
+		mapped := mapKey.MapKey()
+		//	assigns the pair to the key found in mapped
+		pairs[mapped] = object.MapPair{ Key: key, Value: value}
+	}
+	//	returns a new map object with the newly formed pairs
+	return &object.Map{ Pairs: pairs }
+}
+
 func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
 	//	Statements
@@ -382,6 +412,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 
 		return evalIndexExpression(left, index)
+	case *ast.MapLiteral:
+		return evalMapLiteral(node, env)
 	}
 
 	return nil

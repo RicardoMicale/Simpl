@@ -13,6 +13,10 @@ type Object interface {
 	Inspect() string
 }
 
+type Mapable interface {
+	MapKey() MapKey
+}
+
 const (
 	INTEGER_OBJECT = "INTEGER"
 	BOOLEAN_OBJECT = "BOOLEAN"
@@ -23,6 +27,7 @@ const (
 	STRING_OBJECT = "STRING"
 	BUILTIN_OBJECT = "BUILTIN"
 	ARRAY_OBJECT = "ARRAY"
+	MAP_OBJECT = "MAP"
 )
 
 type Null struct {}
@@ -67,4 +72,9 @@ func (f *Function) Inspect() string {
 	out.WriteString("\n}")
 
 	return out.String()
+}
+
+type MapKey struct {
+	Type ObjectType
+	Value uint64
 }
