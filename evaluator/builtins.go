@@ -1,6 +1,7 @@
 package evaluator
 
 import (
+	"fmt"
 	"language/object"
 )
 
@@ -125,6 +126,15 @@ var builtins = map[string]*object.BuiltIn{
 			arr := args[0].(*object.Array)
 			//	returns a new array with the same elements
 			return &object.Array{ Elements: arr.Elements }
+		},
+	},
+	"print": {
+		Fn: func(args ...object.Object) object.Object {
+			for _, arg := range args {
+				fmt.Println(arg.Inspect())
+			}
+
+			return NULL
 		},
 	},
 }

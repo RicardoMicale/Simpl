@@ -280,10 +280,30 @@ func evalArrayIndexExpression(array, index object.Object) object.Object {
 	return arrayObject.Elements[idx]
 }
 
+func evalMapIndexExpression(mapObj, index object.Object) object.Object {
+	mapObject := mapObj.(*object.Map)
+
+	key, ok := index.(object.Mapable)
+
+	if !ok {
+		return newError("Unsupported as map key: %s", index.Type())
+	}
+
+	pair, ok := mapObject.Pairs[key.MapKey()]
+
+	if !ok {
+		return NULL
+	}
+
+	return pair.Value
+}
+
 func evalIndexExpression(left, index object.Object) object.Object {
 	switch {
 	case left.Type() == object.ARRAY_OBJECT && index.Type() == object.INTEGER_OBJECT:
 		return evalArrayIndexExpression(left, index)
+	case left.Type() == object.MAP_OBJECT:
+		return evalMapIndexExpression(left, index)
 	default:
 		return newError("Index operator not supported: %s", left.Type())
 	}
