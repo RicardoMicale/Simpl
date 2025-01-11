@@ -62,6 +62,9 @@ const (
 	TRUE = "TRUE"
 	FALSE = "FALSE"
 	MAP = "MAP"
+	FOR = "FOR"
+	WHILE = "WHILE"
+	IN = "IN"
 )
 
 //	keywords dictionary to keep track of reserved words
@@ -80,6 +83,9 @@ var keywords = map[string]TokenType {
 	"true": TRUE,
 	"false": FALSE,
 	"map": MAP,
+	"for": FOR,
+	"while": WHILE,
+	"in": IN,
 }
 
 func LookupIdent(ident string) TokenType {

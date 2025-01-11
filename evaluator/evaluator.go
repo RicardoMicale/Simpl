@@ -339,6 +339,24 @@ func evalMapLiteral(node *ast.MapLiteral, env *object.Environment) object.Object
 	return &object.Map{ Pairs: pairs }
 }
 
+func evalForStatement(node *ast.ForStatement, env *object.Environment) object.Object {
+	//	evaluating the condition
+	condition := Eval(node.Condition, env)
+	//	if an error is found, return it
+	if isError(condition) {
+		return condition
+	}
+
+	if isTruthy(condition) {
+		//	if the condition is met, evaluate the body of the loop
+		Eval(node.Body, env)
+		//	re-evaluate the loop
+		Eval(node, env)
+	}
+
+	return NULL
+}
+
 func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
 	//	Statements
@@ -371,6 +389,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return Eval(node.Value, env)
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
+	case *ast.ForStatement:
+		return evalForStatement(node, env)
 	//	Expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{ Value: node.Value }

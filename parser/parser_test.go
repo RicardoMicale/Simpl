@@ -1142,6 +1142,55 @@ func TestParsingHashLiteralsWithExpressions(t *testing.T) {
 	}
 }
 
+
+func TestForLoopStatement(t *testing.T) {
+	input := `
+		for (i < 10) {
+			var int i = i + 1;
+		}
+	`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParserProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("Wrong number of statements. Got %d, expected 1", len(program.Statements))
+	}
+
+	statement, ok := program.Statements[0].(*ast.ForStatement)
+
+	if !ok {
+		t.Fatalf("program.Statements[0] is not of type ForStatement, got %T", program.Statements[0])
+	}
+
+	if !testInfixExpression(t, statement.Condition, "i", "<", 10) {
+		return
+	}
+
+	if len(statement.Body.Statements) != 1 {
+		t.Errorf(
+			"Expected 1 statement on the body, but got %d instead",
+			len(statement.Body.Statements),
+		)
+	}
+
+	body, ok := statement.Body.Statements[0].(*ast.VarStatement)
+
+	if !ok {
+		t.Fatalf(
+			"Statements[0] is not  ast.ExpressionStatement. Got %T",
+			statement.Body.Statements[0],
+		)
+	}
+
+	if !testVarStatements(t, body, "i") {
+		return
+	}
+}
+
 func testConstStatements(t *testing.T, statement ast.Statement, name string) bool {
 	if statement.TokenLiteral() != "const" {
 		t.Errorf("statement.TokenLiteral() not const. got %s", statement.TokenLiteral())

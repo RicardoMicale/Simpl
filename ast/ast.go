@@ -342,6 +342,23 @@ func (ml *MapLiteral) String() string {
 	return out.String()
 }
 
+type ForStatement struct {
+	Token token.Token //	'For' token
+	Condition Expression // i in array or i in range(10)
+	Body *BlockStatement
+}
+
+func (fs *ForStatement) statementNode() {}
+func (fs *ForStatement) TokenLiteral() string { return fs.Token.Literal }
+func (fs *ForStatement)	String() string {
+	var out bytes.Buffer
+
+	out.WriteString(fs.Condition.String())
+	out.WriteString(fs.Body.String())
+
+	return out.String()
+}
+
 func (p *Program) TokenLiteral() string {
 	if len(p.Statements) > 0 {
 		return p.Statements[0].TokenLiteral()

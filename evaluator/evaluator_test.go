@@ -524,6 +524,27 @@ func TestMapIndexExpressions(t *testing.T) {
 	}
 }
 
+func TestForLoopStatement(t *testing.T) {
+	tests := []struct{
+		input string
+		expected int64
+	}{
+		{
+			"var int i = 0; for (i < 10) { var int i = i + 1; }; i;",
+			10,
+		},
+		{
+			"var int i = 0; for (false) { var int i = i + 1; }; i;",
+			0,
+		},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		testIntegerObject(t, evaluated, tt.expected)
+	}
+}
+
 func testEval(input string) object.Object {
 	l := lexer.New(input)
 	p := parser.New(l)

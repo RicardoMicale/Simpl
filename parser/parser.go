@@ -33,6 +33,7 @@ var precedences = map[token.TokenType]int{
 	token.MULTIPLY: PRODUCT,
 	token.L_PAREN: CALL,
 	token.L_BRACK: INDEX,
+	token.IN: INDEX,
 }
 
 type (
@@ -85,9 +86,37 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.GREATER_THAN, p.parseInfixExpression)
 	p.registerInfix(token.L_PAREN, p.parseCallExpression)
 	p.registerInfix(token.L_BRACK, p.parseIndexExpression)
+	// p.registerInfix(token.IN, p.parseInfixExpression)
 
 	//	returns the parser
 	return p
+}
+
+func (p *Parser) parseForStatement() ast.Statement {
+	//	create the for loop object
+	statement := &ast.ForStatement{ Token: p.currentToken }
+
+	//	check if the next token is a parentheses
+	if !p.expectPeek(token.L_PAREN) {
+		return nil
+	}
+	//	goes to the next token
+	p.nextToken()
+	//	parses the for loop condition
+	statement.Condition = p.parseExpression(LOWEST)
+	//	looks for a right parentheses to close the condition statement
+	if !p.expectPeek(token.R_PAREN) {
+		return nil
+	}
+	//	looks for a left brace to check if the for loop is opened
+	if !p.expectPeek(token.L_BRACE) {
+		return nil
+	}
+
+	//	parses the body as a block statement
+	statement.Body = p.parseBlockStatement()
+	//	returns the for loop statement
+	return statement
 }
 
 func (p *Parser) parseMapLiteral() ast.Expression {
@@ -605,6 +634,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseVarStatement()
 	case token.RETURN:
 		return p.parseReturnStatement()
+	case token.FOR:
+		return p.parseForStatement()
 	default:
 		return p.parseExpressionStatement()
 	}
