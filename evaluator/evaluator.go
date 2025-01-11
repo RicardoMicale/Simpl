@@ -129,6 +129,10 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 		return nativeBoolToBooleaObject(leftValue > rightValue)
 	case "<":
 		return nativeBoolToBooleaObject(leftValue < rightValue)
+	case "<=":
+		return nativeBoolToBooleaObject(leftValue <= rightValue)
+	case ">=":
+		return nativeBoolToBooleaObject(leftValue >= rightValue)
 	default:
 		return newError("Unknown operator: %s %s %s", left.Type(), operator, right.Type())
 	}

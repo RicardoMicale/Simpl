@@ -354,6 +354,8 @@ func TestParsingInfixExpressions(t *testing.T) {
 		{"true == true", true, "==", true},
 		{"true != false", true, "!=", false},
 		{"false == false", false, "==", false},
+		{"5 <= 10", 5, "<=", 10},
+		{"5 >= 10", 5, ">=", 10},
 	}
 
 	//	loops through the infix tests above

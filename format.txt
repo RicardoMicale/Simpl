@@ -2,7 +2,7 @@
 
 var int multiplier = 3;
 
-func int add(int x, int y) {
+func add(int x, int y) {
   return (x + y) * multiplier;
 }
 
@@ -23,9 +23,7 @@ add -> +
 subtract -> -
 multiply -> *
 divide -> /
-divide exactly -> //
 modulo -> %
-power -> **
 
 //  IF-ELSE-ELSE IF STATEMENTS
 if (condition) {}
@@ -33,21 +31,10 @@ else if (condition) {}
 else {}
 
 //  FOR AND WHILE LOOPS
-for i in array {}
-while (condition) {}
+for (condition) {}
 
 //  DECLARING FUNCTIONS
-func do_something(<data_type> parameter_1, <data_type> parameter_2) {}
+func do_something(parameter_1, parameter_2) {}
 
 //  CALLING FUNCTION
 do_something(parameter_1, parameter_2)
-
-//  DECLARING A CLASS
-class ObjectName() {}
-
-//  INSTANTIATING A CLASS
-ObjectName z = new ObjectName(attribute_1, attribute_2)
-
-//  TRY CATCH
-
-//  ASYNC AWAIT
