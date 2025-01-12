@@ -65,6 +65,10 @@ const (
 	FOR = "FOR"
 	WHILE = "WHILE"
 	IN = "IN"
+	FUNCTION_TYPE = "FN"
+
+	//	any token
+	ANY = "ANY"
 )
 
 //	keywords dictionary to keep track of reserved words
@@ -86,6 +90,7 @@ var keywords = map[string]TokenType {
 	"for": FOR,
 	"while": WHILE,
 	"in": IN,
+	"fn": FUNCTION_TYPE,
 }
 
 func LookupIdent(ident string) TokenType {

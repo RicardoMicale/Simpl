@@ -109,7 +109,50 @@ var builtins = map[string]*object.BuiltIn{
 			return arr
 		},
 	},
-	"removeAt": {},
+	"removeAt": {
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 2 {
+				return newError("Wrong number of arguments. Got %d, expected 2", len(args))
+			}
+
+			if args[0].Type() != object.ARRAY_OBJECT {
+				return newError(
+					"First argument to `removeAt should be an array type. Got %s instead.",
+					args[0].Type(),
+				)
+			}
+
+			if args[1].Type() != object.INTEGER_OBJECT {
+				return newError(
+					"Second argument to `removeAt` should be an Integer/ Got %s instead",
+					args[1].Type(),
+				)
+			}
+			//	gets both the aray and the index
+			arrayToModify := args[0].(*object.Array)
+			indexToRemove := args[1].(*object.Integer).Value
+			//	creates a slice copy of the elements of the array to modify
+			updatedArray := arrayToModify.Elements
+
+			//	checks if the index passed is bigger than the amount of elements of the array
+			if int(indexToRemove) >= len(updatedArray) || int(indexToRemove) < 0 {
+				return newError(
+					"Index out of range. Received %d. should be between 0 and %d",
+					indexToRemove,
+					len(updatedArray) - 1,
+				)
+			}
+
+			//	concatenates the array to modify, skipping the position to remove
+			updatedArray = append(
+				updatedArray[:indexToRemove], updatedArray[indexToRemove + 1:]...,
+			)
+			//	updates the elements on the original array to be modified
+			arrayToModify.Elements = updatedArray
+			//	returns the updated array
+			return arrayToModify
+		},
+	},
 	"copy": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
@@ -135,6 +178,60 @@ var builtins = map[string]*object.BuiltIn{
 			}
 
 			return NULL
+		},
+	},
+	"range": {
+		Fn: func(args ...object.Object) object.Object {
+			//	check that the correct number of arguments is received
+			if len(args) > 2 || len(args) == 0 {
+				return newError("Wrong number of arguments. Expected 1 or 2, got %d", len(args))
+			}
+			//	type check the first argument to be an Integer
+			_, ok := args[0].(*object.Integer)
+
+			if !ok {
+				return newError(
+					"Expected the first argument to be an Integer value type. GOt %T instead",
+					args[0],
+				)
+			}
+			//	if there is more than one argument check the second element of the args array
+			if len(args) == 2 {
+				//	type check the second argument to be an Integer
+				_, ok := args[1].(*object.Integer)
+
+				if !ok {
+					return newError(
+						"Expected the second argument to be an Integer value type. Got %T instead",
+						args[1],
+					)
+				}
+			}
+			//	declare the variables to navigate the range
+			var start int64
+			var end int64
+			/**
+			*
+			*	If there are 2 arguments
+			*	the first one is the start of the range
+			*	and the seconda one is the end of the range
+			* if there is only one argument, define it as the end of the range
+			*
+			*/
+			if len(args) == 2 {
+				start = args[0].(*object.Integer).Value
+				end = args[1].(*object.Integer).Value
+			} else {
+				end = args[0].(*object.Integer).Value
+			}
+			//	makes an array of size end - start + 1
+			rangeArray := make([]object.Object, end - start + 1)
+			//	loops through that array and assigns each position the start + the index they are at
+			for i := range rangeArray {
+				rangeArray[i] = &object.Integer{ Value: start + int64(i) }
+			}
+			//	returns the array object
+			return &object.Array{ Elements: rangeArray }
 		},
 	},
 }

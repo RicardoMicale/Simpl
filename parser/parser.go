@@ -22,6 +22,17 @@ const (
 	INDEX //	array[index]
 )
 
+var dataTypes = []token.TokenType{
+	token.INT,
+	token.STRING,
+	token.DOUBLE,
+	token.BOOL,
+	token.ARRAY,
+	token.MAP,
+	token.ANY,
+	token.FUNCTION_TYPE,
+}
+
 var precedences = map[token.TokenType]int{
 	token.EQUALS: EQUALS,
 	token.NOT_EQUALS: EQUALS,
@@ -456,18 +467,48 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 	}
 }
 
+func (p *Parser) typeError(expectedType, actualType token.TokenType, statement string) {
+	message := fmt.Sprintf(
+		"Expected type %s, got %s on: %s", expectedType, actualType, statement,
+	)
+	p.errors = append(p.errors, message)
+}
+
+func (p *Parser) inferType(value ast.Expression) token.TokenType {
+	switch value.(type) {
+	case *ast.IntegerLiteral:
+		return token.INT
+	case *ast.StringLiteral:
+		return token.STRING
+	case *ast.Boolean:
+		return token.BOOL
+	case *ast.ArrayLiteral:
+		return token.ARRAY
+	case *ast.MapLiteral:
+		return token.MAP
+	case *ast.Identifier:
+		return token.ANY
+	case *ast.FunctionLiteral:
+		return token.FUNCTION_TYPE
+	case *ast.InfixExpression:
+		return token.ANY
+	case *ast.PrefixExpression:
+		return token.ANY
+	case *ast.CallExpression:
+		return token.ANY
+	default:
+		return token.ILLEGAL
+	}
+}
+
+func (p *Parser) typeCheck(expectedType token.Token, value ast.Expression) bool {
+	valueType := p.inferType(value)
+	return valueType == expectedType.Type
+}
+
 func (p *Parser) parseConstStatement() *ast.ConstStatement {
 	//	creates the statement object and assigns its memory address to a variable
 	statement := &ast.ConstStatement{ Token: p.currentToken}
-	//	helper variable with data type tokens
-	dataTypes := []token.TokenType{
-		token.INT,
-		token.STRING,
-		token.DOUBLE,
-		token.BOOL,
-		token.ARRAY,
-		token.MAP,
-	}
 	//	used to store the data type
 	var foundType token.TokenType
 	//	checks if the next token is a data type token
@@ -481,6 +522,8 @@ func (p *Parser) parseConstStatement() *ast.ConstStatement {
 	if !p.expectPeek(foundType) {
 		return nil
 	}
+	//	sets the const type as the found type
+	statement.Type = p.currentToken
 
 	//	checks if the next token is not a variable name
 	if !p.expectPeek(token.IDENTIFIER) {
@@ -497,6 +540,12 @@ func (p *Parser) parseConstStatement() *ast.ConstStatement {
 	p.nextToken()
 	//	sets the value for the variable
 	statement.Value = p.parseExpression(LOWEST)
+	//	checks that the type is matched
+	if (!p.typeCheck(statement.Type, statement.Value) &&
+		p.inferType(statement.Value) != token.ANY) {
+		p.typeError(statement.Type.Type, p.inferType(statement.Value), statement.String())
+		return nil
+	}
 
 	for !p.currentTokenIs(token.SEMICOLON) {
 		p.nextToken()
@@ -508,8 +557,6 @@ func (p *Parser) parseConstStatement() *ast.ConstStatement {
 func (p *Parser) parseVarStatement() *ast.VarStatement {
 	//	creates the statement object and assigns its memory address to a variable
 	statement := &ast.VarStatement{ Token: p.currentToken}
-	//	helper variable with data type tokens
-	dataTypes := []token.TokenType{token.INT, token.STRING, token.DOUBLE, token.BOOL}
 	//	used to store the data type
 	var foundType token.TokenType
 	//	checks if the next token is a data type token
@@ -523,7 +570,8 @@ func (p *Parser) parseVarStatement() *ast.VarStatement {
 	if !p.expectPeek(foundType) {
 		return nil
 	}
-
+	//	sets the type of the variable
+	statement.Type = p.currentToken
 	//	checks if the next token is not a variable name
 	if !p.expectPeek(token.IDENTIFIER) {
 		return nil
@@ -539,6 +587,13 @@ func (p *Parser) parseVarStatement() *ast.VarStatement {
 	p.nextToken()
 	//	sets the value for the variable
 	statement.Value = p.parseExpression(LOWEST)
+
+	//	checks that the type is matched
+	if (!p.typeCheck(statement.Type, statement.Value) &&
+		p.inferType(statement.Value) != token.ANY) {
+		p.typeError(statement.Type.Type, p.inferType(statement.Value), statement.String())
+		return nil
+	}
 
 	for !p.currentTokenIs(token.SEMICOLON) {
 		p.nextToken()

@@ -29,6 +29,7 @@ type ConstStatement struct {
 	Token token.Token //	the token.CONST token
 	Name *Identifier
 	Value Expression
+	Type token.Token //	the token of the type assigned
 }
 
 func (cs *ConstStatement) statementNode() {}
@@ -37,6 +38,7 @@ func (cs *ConstStatement) String() string {
 	var out bytes.Buffer
 
 	out.WriteString(cs.TokenLiteral() + " ")
+	out.WriteString(cs.Type.Literal + " ")
 	out.WriteString(cs.Name.String())
 	out.WriteString(" = ")
 
@@ -53,6 +55,7 @@ type VarStatement struct {
 	Token token.Token //	the token.VAR token
 	Name *Identifier
 	Value Expression
+	Type token.Token //	the token of the type assigned
 }
 
 func (vs *VarStatement) statementNode() {}
@@ -61,6 +64,7 @@ func (vs *VarStatement) String() string {
 	var out bytes.Buffer
 
 	out.WriteString(vs.TokenLiteral() + " ")
+	out.WriteString(vs.Type.Literal + " ")
 	out.WriteString(vs.Name.String())
 	out.WriteString(" = ")
 
@@ -352,9 +356,11 @@ func (fs *ForStatement) statementNode() {}
 func (fs *ForStatement) TokenLiteral() string { return fs.Token.Literal }
 func (fs *ForStatement)	String() string {
 	var out bytes.Buffer
-
+	out.WriteString("for ")
 	out.WriteString(fs.Condition.String())
+	out.WriteString(" {\n")
 	out.WriteString(fs.Body.String())
+	out.WriteString("\n}")
 
 	return out.String()
 }

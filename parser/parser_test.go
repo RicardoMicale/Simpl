@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"language/ast"
 	"language/lexer"
+	"language/token"
 	"testing"
 )
 
@@ -1183,7 +1184,7 @@ func TestForLoopStatement(t *testing.T) {
 
 	if !ok {
 		t.Fatalf(
-			"Statements[0] is not  ast.ExpressionStatement. Got %T",
+			"Statements[0] is not  ast.VarStatement. Got %T",
 			statement.Body.Statements[0],
 		)
 	}
@@ -1191,6 +1192,164 @@ func TestForLoopStatement(t *testing.T) {
 	if !testVarStatements(t, body, "i") {
 		return
 	}
+}
+
+func TestConstVariableTyping(t *testing.T) {
+	tests := []struct{
+		input string
+		expected token.TokenType
+	}{
+		{
+			`const int x = 2;`,
+			token.INT,
+		},
+		{
+			`const string x = "Hello";`,
+			token.STRING,
+		},
+		{
+			`const bool x = true;`,
+			token.BOOL,
+		},
+		{
+			`const bool x = false;`,
+			token.BOOL,
+		},
+		{
+			`const array x = [1, 2];`,
+			token.ARRAY,
+		},
+		{
+			`const map x = {"one": 1, "two": 2};`,
+			token.MAP,
+		},
+		{
+			`const fn x = func(arg) { arg };`,
+			token.FUNCTION_TYPE,
+		},
+		{
+			`const int x = addTwo(1, 2);`,
+			token.INT,
+		},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+
+		program := p.ParserProgram()
+		checkParserErrors(t, p)
+
+		if len(program.Statements) != 1 {
+			t.Fatalf(
+				"Wrong number or elements in program.Statements. Expected 1, got %d",
+				len(program.Statements),
+			)
+		}
+
+		statement, ok := program.Statements[0].(*ast.ConstStatement)
+
+		if !ok {
+			t.Fatalf(
+				"program.Statements[0] is not an ast.ConstStatement, got %T", program.Statements[0],
+			)
+		}
+
+		if !testConstTypeChecking(t, statement, tt.expected) {
+			return
+		}
+	}
+}
+
+func TestVarVariableTyping(t *testing.T) {
+	tests := []struct{
+		input string
+		expected token.TokenType
+	}{
+		{
+			`var int x = 2;`,
+			token.INT,
+		},
+		{
+			`var string x = "Hello";`,
+			token.STRING,
+		},
+		{
+			`var bool x = true;`,
+			token.BOOL,
+		},
+		{
+			`var bool x = false;`,
+			token.BOOL,
+		},
+		{
+			`var array x = [1, 2];`,
+			token.ARRAY,
+		},
+		{
+			`var map x = {"one": 1, "two": 2};`,
+			token.MAP,
+		},
+		{
+			`var fn x = func(arg) { arg };`,
+			token.FUNCTION_TYPE,
+		},
+		{
+			`var int x = addTwo(1, 2);`,
+			token.INT,
+		},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+
+		program := p.ParserProgram()
+		checkParserErrors(t, p)
+
+		if len(program.Statements) != 1 {
+			t.Fatalf(
+				"Wrong number or elements in program.Statements. Expected 1, got %d",
+				len(program.Statements),
+			)
+		}
+
+		statement, ok := program.Statements[0].(*ast.VarStatement)
+
+		if !ok {
+			t.Fatalf(
+				"program.Statements[0] is not an ast.VarStatement, got %T", program.Statements[0],
+			)
+		}
+
+		if !testVarTypeChecking(t, statement, tt.expected) {
+			return
+		}
+	}
+}
+
+func testConstTypeChecking(
+	t *testing.T,
+	statement *ast.ConstStatement,
+	expected token.TokenType,
+) bool {
+	if statement.Type.Type != expected {
+		t.Errorf("Expected type %s, got %s instead", statement.Type.Type, expected)
+		return false
+	}
+	return true
+}
+
+func testVarTypeChecking(
+	t *testing.T,
+	statement *ast.VarStatement,
+	expected token.TokenType,
+) bool {
+	if statement.Type.Type != expected {
+		t.Errorf("Expected type %s, got %s instead", statement.Type.Type, expected)
+		return false
+	}
+	return true
 }
 
 func testConstStatements(t *testing.T, statement ast.Statement, name string) bool {
