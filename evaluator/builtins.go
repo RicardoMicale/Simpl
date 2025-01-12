@@ -208,17 +208,19 @@ var builtins = map[string]*object.BuiltIn{
 				}
 			}
 			//	declare the variables to navigate the range
-			var start int64
+			//	if the start is not provided, default it at zero
+			var start int64 = 0
 			var end int64
 			/**
 			*
 			*	If there are 2 arguments
 			*	the first one is the start of the range
-			*	and the seconda one is the end of the range
+			*	and the second one is the end of the range
 			* if there is only one argument, define it as the end of the range
 			*
 			*/
 			if len(args) == 2 {
+				//	redefines start to the passed argument
 				start = args[0].(*object.Integer).Value
 				end = args[1].(*object.Integer).Value
 			} else {
