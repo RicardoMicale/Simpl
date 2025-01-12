@@ -55,19 +55,21 @@ for (i < 10) {
 
 ## Built in functions
 
-Print
+### Print
 
 Receives any data type and prints it to the console. Can receive any number of arguments
 -> print(<argument>)
+
 ```
 print("Hello world!");
 //  outputs "Hello world!"
 ```
 
-Length
+### Length
 
 Receives a string or array data type and returns the length
 -> length(<string | array>)
+
 ```
 const string myString = "Hello";
 const int len = length(myString);
@@ -82,10 +84,11 @@ print(len);
 //  outputs 3
 ```
 
-Push
+### Push
 
 Adds an element to the end of the array
 -> push(<array_var>, <new_element>)
+
 ```
 const array myArray = [1, 2, 3];
 push(myArray, 4);
@@ -93,10 +96,11 @@ print(myArray);
 //  outputs [1, 2, 3, 4]
 ```
 
-RemoveAt
+### RemoveAt
 
 Removes an element at the specified position on the array
 -> removeAt(<array_var>, <index_to_remove>)
+
 ```
 const array myArray = [1, 2, 3];
 removeAt(myArray, 1);
@@ -104,10 +108,11 @@ print(myArray);
 //  output [1, 3]
 ```
 
-RemoveLast
+### RemoveLast
 
 Removes last element of the array
 -> removeLast(<array_var>)
+
 ```
 const array myArray = [1, 2, 3];
 removeLast(myArray);
@@ -115,10 +120,11 @@ print(myArray);
 //  outputs [1, 2]
 ```
 
-FirstElement
+### FirstElement
 
 Returns the first element of the array
 -> firstElement(<array_var>)
+
 ```
 const array myArray = ["Welcome", "to", "Simpl"];
 const string element = firstElement(myArray);
@@ -126,10 +132,11 @@ print(element);
 //  outputs Welcome
 ```
 
-LastElement
+### LastElement
 
 Returns the last element of the array
 -> lastElement(<array_var>)
+
 ```
 const array myArray = ["Welcome", "to", "Simpl"];
 const string name = lastElement(myArray);
@@ -137,10 +144,11 @@ print(name);
 //  outputs Simpl
 ```
 
-Copy
+### Copy
 
 Makes a copy of an array
 -> copy(<array_var>)
+
 ```
 const array myArray = [1, 2, 3];
 const array mySecondArray = copy(myArray);
@@ -148,11 +156,12 @@ print(mySecondArray);
 //  outputs [1, 2, 3]
 ```
 
-Range
+### Range
 
 Takes one or two numbers and makes an array between those. If only one is provided, the range goes from zero (0) to the end parameter
 -> range(<start>, <end>) | from start to end
 -> range(<end>) | from 0 to end
+
 ```
 const array myArray = range(5, 10);
 print(myArray);
