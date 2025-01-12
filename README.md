@@ -12,14 +12,14 @@ Right now there is no installation
 
 ## Usage
 
-Declaring variables
+### Declaring variables
 
 ```
 const int a = 5;
 var int b = 4;
 ```
 
-Conditionals
+### Conditionals
 
 ```
 if (a < b) {
@@ -29,7 +29,7 @@ if (a < b) {
 }
 ```
 
-Functions and function calls
+### Functions and function calls
 
 ```
 func add(x, y) {
@@ -41,7 +41,7 @@ add(a, b);
 const int c = add(4, 4);
 ```
 
-For loops
+### For loops
 
 ```
 var int i = 0
@@ -58,7 +58,8 @@ for (i < 10) {
 ### Print
 
 Receives any data type and prints it to the console. Can receive any number of arguments
--> print(<argument>)
+
+print(<argument>)
 
 ```
 print("Hello world!");
@@ -68,7 +69,8 @@ print("Hello world!");
 ### Length
 
 Receives a string or array data type and returns the length
--> length(<string | array>)
+
+length(<string | array>)
 
 ```
 const string myString = "Hello";
@@ -87,7 +89,8 @@ print(len);
 ### Push
 
 Adds an element to the end of the array
--> push(<array_var>, <new_element>)
+
+push(<array_var>, <new_element>)
 
 ```
 const array myArray = [1, 2, 3];
@@ -99,7 +102,8 @@ print(myArray);
 ### RemoveAt
 
 Removes an element at the specified position on the array
--> removeAt(<array_var>, <index_to_remove>)
+
+removeAt(<array_var>, <index_to_remove>)
 
 ```
 const array myArray = [1, 2, 3];
@@ -111,7 +115,8 @@ print(myArray);
 ### RemoveLast
 
 Removes last element of the array
--> removeLast(<array_var>)
+
+removeLast(<array_var>)
 
 ```
 const array myArray = [1, 2, 3];
@@ -123,7 +128,8 @@ print(myArray);
 ### FirstElement
 
 Returns the first element of the array
--> firstElement(<array_var>)
+
+firstElement(<array_var>)
 
 ```
 const array myArray = ["Welcome", "to", "Simpl"];
@@ -135,7 +141,8 @@ print(element);
 ### LastElement
 
 Returns the last element of the array
--> lastElement(<array_var>)
+
+lastElement(<array_var>)
 
 ```
 const array myArray = ["Welcome", "to", "Simpl"];
@@ -147,7 +154,8 @@ print(name);
 ### Copy
 
 Makes a copy of an array
--> copy(<array_var>)
+
+copy(<array_var>)
 
 ```
 const array myArray = [1, 2, 3];
@@ -159,8 +167,9 @@ print(mySecondArray);
 ### Range
 
 Takes one or two numbers and makes an array between those. If only one is provided, the range goes from zero (0) to the end parameter
--> range(<start>, <end>) | from start to end
--> range(<end>) | from 0 to end
+
+range(<start>, <end>) | from start to end
+range(<end>) | from 0 to end
 
 ```
 const array myArray = range(5, 10);
