@@ -10,6 +10,7 @@ type Token struct {
 const (
 	ILLEGAL = "ILLEGAL"
 	EOF = "EOF" //	End Of File
+	NEW_LINE = "\n"
 
 	//	Identifiers and literals
 	IDENTIFIER = "IDENTIFIER" //	variables

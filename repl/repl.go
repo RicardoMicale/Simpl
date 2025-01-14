@@ -26,6 +26,11 @@ func Start(in io.Reader, out io.Writer) {
 		}
 		line := scanner.Text()
 
+		if line == "quit" {
+			fmt.Fprintln(out, "Goodbye!")
+			break
+		}
+
 		l := lexer.New(line)
 		p := parser.New(l)
 		program := p.ParserProgram()

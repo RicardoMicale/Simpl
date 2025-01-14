@@ -4,7 +4,15 @@ Simpl is a simple programming language created with the purpose of practicing an
 
 This language aims to be simple and provide with a set of tools, functions and methods to create scripts and to be more than just a practice project.
 
-Right now this is just a rather incomplete version, but updates will come in the near future.
+This version is just a working language with basic functions, but it still needs more polishing and newer functionalities in the future.
+
+To use it, download the code, create a file with the smp extension withing the same directory and run the following command:
+
+```
+go run main.go <FILE_NAME>
+```
+
+With the download there is a file called 'example.smp' that has an example of the language, which you can run and modify with the command above, subtituting <FILE_NAME> with 'example.smp' and it will show the output for he code.
 
 ## Installation
 
@@ -59,7 +67,7 @@ for (i < 10) {
 
 Receives any data type and prints it to the console. Can receive any number of arguments
 
-print(<argument>)
+print(<arg>)
 
 ```
 print("Hello world!");

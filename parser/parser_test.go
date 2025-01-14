@@ -579,7 +579,11 @@ func TestBooleanParsing(t *testing.T) {
 }
 
 func TestIfStatement(t *testing.T) {
-	input := `if (x < y) { x }`
+	input := `
+		if (x < y) {
+			x
+		}
+	`
 
 	l := lexer.New(input)
 	p := New(l)

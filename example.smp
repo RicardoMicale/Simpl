@@ -1,0 +1,23 @@
+const fn greet = func(name, laps) {
+  var array greetings = [];
+  var int j = 0;
+
+  for (j < laps) {
+    push(greetings, name);
+    var int j = j + 1;
+  }
+
+  return greetings;
+};
+
+var int i = 0;
+const array myArray = greet("Simpl", 5);
+
+for (i < length(myArray)) {
+  if (i == 0) {
+    print("Hello for the first time " + myArray[i] + "!");
+  } else {
+    print("Hello on your next lap " + myArray[i]);
+  }
+  var int i = i + 1;
+}
