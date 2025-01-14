@@ -684,6 +684,26 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 	return literal
 }
 
+func (p *Parser) parseReassignStatement() *ast.ReassignStatement {
+	statement := &ast.ReassignStatement{ Token: p.currentToken }
+
+	statement.Name = &ast.Identifier{ Token: p.currentToken, Value: p.currentToken.Literal }
+
+	if !p.expectPeek(token.ASSIGN) {
+		return nil
+	}
+
+	p.nextToken()
+
+	statement.Value = p.parseExpression(LOWEST)
+
+	if !p.currentTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
+
+	return statement
+}
+
 func (p *Parser) parseStatement() ast.Statement {
 	//	switches depending on the token type and parses that specific type
 	switch p.currentToken.Type {
@@ -695,6 +715,11 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseReturnStatement()
 	case token.FOR:
 		return p.parseForStatement()
+	case token.IDENTIFIER:
+		if p.peekTokenIs(token.ASSIGN) {
+			return p.parseReassignStatement()
+		}
+		return p.parseExpressionStatement()
 	default:
 		return p.parseExpressionStatement()
 	}

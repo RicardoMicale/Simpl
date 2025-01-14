@@ -1332,6 +1332,74 @@ func TestVarVariableTyping(t *testing.T) {
 	}
 }
 
+func TestReassignStatement(t *testing.T) {
+	tests := []struct {
+		input string
+		expectedIdentifier string
+		expectedValue interface{}
+	} {
+		{
+			"x = 5;", "x", 5,
+		},
+		{
+			"y = true;", "y", true,
+		},
+		{
+			"z = y;", "z", "y",
+		},
+	}
+
+	//	loops through the tests
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+
+		program := p.ParserProgram()
+		checkParserErrors(t, p)
+
+		if len(program.Statements) != 1 {
+			t.Fatalf(
+				"program.Statements does not have %d elements, received %d",
+				1,
+				len(program.Statements),
+			)
+		}
+
+		statement := program.Statements[0]
+
+		if !testReassignStatements(t, statement, tt.expectedIdentifier) {
+			return
+		}
+
+		value := statement.(*ast.ReassignStatement).Value
+
+		if !testLiteralExpression(t, value, tt.expectedValue) {
+			return
+		}
+	}
+}
+
+func testReassignStatements(t *testing.T, statement ast.Statement, name string) bool {
+	reassignStatement, ok := statement.(*ast.ReassignStatement)
+
+	if !ok {
+		t.Errorf("statement is not ast.Statement, got %T", statement)
+		return false
+	}
+
+	if reassignStatement.Name.Value != name {
+		t.Errorf("reassignStatement.Name.Value not %s. got %s", name, reassignStatement.Name.Value)
+		return false
+	}
+
+	if reassignStatement.Name.TokenLiteral() != name {
+		t.Errorf("reassignStatement.Name not %s. got %s", name, reassignStatement.Name)
+		return false
+	}
+
+	return true
+}
+
 func testConstTypeChecking(
 	t *testing.T,
 	statement *ast.ConstStatement,

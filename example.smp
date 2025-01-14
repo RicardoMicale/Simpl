@@ -4,7 +4,7 @@ const fn greet = func(name, laps) {
 
   for (j < laps) {
     push(greetings, name);
-    var int j = j + 1;
+    j = j + 1;
   }
 
   return greetings;
@@ -19,5 +19,5 @@ for (i < length(myArray)) {
   } else {
     print("Hello on your next lap " + myArray[i]);
   }
-  var int i = i + 1;
+  i = i + 1;
 }

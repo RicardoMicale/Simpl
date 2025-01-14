@@ -364,6 +364,25 @@ func evalForStatement(node *ast.ForStatement, env *object.Environment) object.Ob
 	return NULL
 }
 
+func evalReassignmentStatement(
+	node *ast.ReassignStatement,
+	env *object.Environment,
+) object.Object {
+	val := Eval(node.Value, env)
+
+	if val == nil {
+		return nil
+	}
+
+	if _, ok := env.Get(node.Name.Value); ok {
+		env.Set(node.Name.Value, val)
+	} else {
+		return newError("%s", "Identifier not found: " + node.Name.Value)
+	}
+
+	return val
+}
+
 func Eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
 	//	Statements
@@ -394,6 +413,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		env.Set(node.Name.Value, val)
 		return Eval(node.Value, env)
+	case *ast.ReassignStatement:
+		return evalReassignmentStatement(node, env)
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
 	case *ast.ForStatement:

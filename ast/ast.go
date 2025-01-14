@@ -365,6 +365,24 @@ func (fs *ForStatement)	String() string {
 	return out.String()
 }
 
+type ReassignStatement struct {
+	Token token.Token // the IDENTIFIER token
+	Name *Identifier
+	Value Expression
+}
+
+func (rs *ReassignStatement) statementNode() {}
+func (rs *ReassignStatement) TokenLiteral() string { return rs.Token.Literal }
+func (rs *ReassignStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(rs.Name.String())
+	out.WriteString(" = ")
+	out.WriteString(rs.Value.String() + ";")
+
+	return out.String()
+}
+
 func (p *Program) TokenLiteral() string {
 	if len(p.Statements) > 0 {
 		return p.Statements[0].TokenLiteral()
