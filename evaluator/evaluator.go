@@ -120,6 +120,9 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	case "*":
 		return &object.Integer{ Value: leftValue * rightValue }
 	case "/":
+		if rightValue == 0 {
+			return newError("Error: division by zero not supported")
+		}
 		return &object.Integer{ Value: leftValue / rightValue }
 	case "==":
 		return nativeBoolToBooleaObject(leftValue == rightValue)
