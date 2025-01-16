@@ -1,4 +1,4 @@
-const fn greet = func(name, laps) {
+var fn greet = func(name, laps) {
   var array greetings = [];
   var int j = 0;
 
@@ -11,7 +11,7 @@ const fn greet = func(name, laps) {
 };
 
 var int i = 0;
-const array myArray = greet("Simpl", 5);
+var array myArray = greet("Simpl", 5);
 
 for (i < length(myArray)) {
   if (i == 0) {
