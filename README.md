@@ -23,13 +23,15 @@ Right now there is no installation
 ### Declaring variables
 
 ```
-const int a = 5;
 var int b = 4;
 ```
 
 ### Conditionals
 
 ```
+var int a = 0;
+var int b = 1;
+
 if (a < b) {
   return 10;
 } else {
@@ -44,20 +46,26 @@ func add(x, y) {
   return x + y;
 }
 
-add(a, b);
+var int c = add(4, 4);
+```
 
-const int c = add(4, 4);
+```
+var int add = func(x, y) {
+  return x + y;
+}
+
+var int c = add(4, 4);
 ```
 
 ### For loops
 
 ```
-var int i = 0
-var array myArray = []
+var int i = 0;
+var array myArray = [];
 
 for (i < 10) {
   push(myArray, i);
-  var int i = i + 1;
+  i = i + 1;
 }
 ```
 
@@ -81,15 +89,15 @@ Receives a string or array data type and returns the length
 length(<string | array>)
 
 ```
-const string myString = "Hello";
-const int len = length(myString);
+var string myString = "Hello";
+var int len = length(myString);
 print(len);
 //  outputs 5
 ```
 
 ```
-const array myArray = [1, 2, 3];
-const int len = length(myArray);
+var array myArray = [1, 2, 3];
+var int len = length(myArray);
 print(len);
 //  outputs 3
 ```
@@ -101,7 +109,7 @@ Adds an element to the end of the array
 push(<array_var>, <new_element>)
 
 ```
-const array myArray = [1, 2, 3];
+var array myArray = [1, 2, 3];
 push(myArray, 4);
 print(myArray);
 //  outputs [1, 2, 3, 4]
@@ -114,7 +122,7 @@ Removes an element at the specified position on the array
 removeAt(<array_var>, <index_to_remove>)
 
 ```
-const array myArray = [1, 2, 3];
+var array myArray = [1, 2, 3];
 removeAt(myArray, 1);
 print(myArray);
 //  output [1, 3]
@@ -127,7 +135,7 @@ Removes last element of the array
 removeLast(<array_var>)
 
 ```
-const array myArray = [1, 2, 3];
+var array myArray = [1, 2, 3];
 removeLast(myArray);
 print(myArray);
 //  outputs [1, 2]
@@ -140,8 +148,8 @@ Returns the first element of the array
 firstElement(<array_var>)
 
 ```
-const array myArray = ["Welcome", "to", "Simpl"];
-const string element = firstElement(myArray);
+var array myArray = ["Welcome", "to", "Simpl"];
+var string element = firstElement(myArray);
 print(element);
 //  outputs Welcome
 ```
@@ -153,8 +161,8 @@ Returns the last element of the array
 lastElement(<array_var>)
 
 ```
-const array myArray = ["Welcome", "to", "Simpl"];
-const string name = lastElement(myArray);
+var array myArray = ["Welcome", "to", "Simpl"];
+var string name = lastElement(myArray);
 print(name);
 //  outputs Simpl
 ```
@@ -166,8 +174,8 @@ Makes a copy of an array
 copy(<array_var>)
 
 ```
-const array myArray = [1, 2, 3];
-const array mySecondArray = copy(myArray);
+var array myArray = [1, 2, 3];
+var array mySecondArray = copy(myArray);
 print(mySecondArray);
 //  outputs [1, 2, 3]
 ```
@@ -180,13 +188,13 @@ range(<start>, <end>) | from start to end
 range(<end>) | from 0 to end
 
 ```
-const array myArray = range(5, 10);
+var array myArray = range(5, 10);
 print(myArray);
 //  outputs [5, 6, 7, 8, 9, 10]
 ```
 
 ```
-const array myArray = range(5);
+var array myArray = range(5);
 print(myArray);
 //  outputs [0, 1, 2, 3, 4, 5]
 ```
