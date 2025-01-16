@@ -1,5 +1,7 @@
 package object
 
+import "fmt"
+
 type Environment struct {
 	store map[string]Object
 	outer *Environment
@@ -25,6 +27,14 @@ func (e *Environment) Get(name string) (Object, bool) {
 }
 
 func (e *Environment) Set(name string, value Object) Object {
+	prevValue, ok := e.store[name]
+
+	if ok {
+		if prevValue.Type() != value.Type() {
+			return &Error{ Message: fmt.Sprintf("Cannot reassign different types. Passed %s type to %s type variable", value.Type(), prevValue.Type()) }
+		}
+	}
+
 	e.store[name] = value
 	return value
 }

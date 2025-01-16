@@ -375,7 +375,12 @@ func evalReassignmentStatement(
 	}
 
 	if _, ok := env.Get(node.Name.Value); ok {
-		env.Set(node.Name.Value, val)
+		reassignment := env.Set(node.Name.Value, val)
+
+		if isError(reassignment) {
+			return reassignment
+		}
+
 	} else {
 		return newError("%s", "Identifier not found: " + node.Name.Value)
 	}
