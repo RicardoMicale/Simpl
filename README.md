@@ -12,7 +12,7 @@ To use it, download the code, create a file with the smp extension withing the s
 go run main.go <FILE_NAME>
 ```
 
-With the download there is a file called 'example.smp' that has an example of the language, which you can run and modify with the command above, subtituting <FILE_NAME> with 'example.smp' and it will show the output for he code.
+With the download there is a file called 'example.smp' that has an example of the language, which you can run and modify with the command above, substituting <FILE_NAME> with 'example.smp' and it will show the output for he code.
 
 ## Installation
 
@@ -67,6 +67,10 @@ for (i < 10) {
   push(myArray, i);
   i = i + 1;
 }
+```
+
+```
+/# This is a comment /#
 ```
 
 ## Built in functions

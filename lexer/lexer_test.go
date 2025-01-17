@@ -33,6 +33,7 @@ func TestNextToken(t *testing.T) {
 	for (i < 10) {
 		x = x + i
 	};
+	/#	comments #/
 	multiplier = 4;
 	`
 
@@ -130,6 +131,7 @@ func TestNextToken(t *testing.T) {
 		{token.IDENTIFIER, "i"},
 		{token.R_BRACE, "}"},
 		{token.SEMICOLON, ";"},
+		{token.DIVIDE, "/"},
 		{token.IDENTIFIER, "multiplier"},
 		{token.ASSIGN, "="},
 		{token.INT, "4"},

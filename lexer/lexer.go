@@ -109,6 +109,20 @@ func (l *Lexer) readString() string {
 	return l.input[position:l.position]
 }
 
+func (l *Lexer) skipComment() {
+	//	skips the / and the #
+	l.readChar()
+	l.readChar()
+	//	loops until the next # is found (marking the end of the comment)
+	for l.ch != '#' {
+		l.readChar()
+	}
+	//	goes to the next token to skip the last #
+	l.readChar()
+	//	skips the comment
+	l.skipWhitespace()
+}
+
 func (l *Lexer) NextToken() token.Token {
 	//	creates a token variable uninitialized
 	var tok token.Token
@@ -139,6 +153,10 @@ func (l *Lexer) NextToken() token.Token {
 	case '*':
 		tok = newToken(token.MULTIPLY, l.ch)
 	case '/':
+		if l.peekChar() == '#' {
+			l.skipComment()
+			return l.NextToken()
+		}
 		tok = newToken(token.DIVIDE, l.ch)
 	case '%':
 		tok = newToken(token.MODULO, l.ch)

@@ -10,8 +10,10 @@ var fn greet = func(name, laps) {
   return greetings;
 };
 
-var int i = 0;
+var int i = 0; /# before /#
 var array myArray = greet("Simpl", 5);
+
+/# here /#
 
 for (i < length(myArray)) {
   if (i == 0) {
@@ -21,3 +23,8 @@ for (i < length(myArray)) {
   }
   i = i + 1;
 }
+
+/#
+This multiline is the end
+of the sample
+/#
