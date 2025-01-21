@@ -348,8 +348,6 @@ func TestParsingInfixExpressions(t *testing.T) {
 		{"5 / 5", 5, "/", 5},
 		{"5 > 5", 5, ">", 5},
 		{"5 < 5", 5, "<", 5},
-		// {"5 >= 5", 5, ">=", 5},
-		// {"5 <= 5", 5, "<=", 5},
 		{"5 == 5", 5, "==", 5},
 		{"5 != 5", 5, "!=", 5},
 		{"true == true", true, "==", true},
@@ -357,6 +355,12 @@ func TestParsingInfixExpressions(t *testing.T) {
 		{"false == false", false, "==", false},
 		{"5 <= 10", 5, "<=", 10},
 		{"5 >= 10", 5, ">=", 10},
+		{"true && true", true, "&&", true},
+		{"true || true", true, "||", true},
+		{"false && false", false, "&&", false},
+		{"false || false", false, "||", false},
+		{"false && true", false, "&&", true},
+		{"false || true", false, "||", true},
 	}
 
 	//	loops through the infix tests above

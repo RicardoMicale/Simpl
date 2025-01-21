@@ -69,10 +69,17 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"1 <= 2", true},
 		{"2 <= 2", true},
 		{"3 <= 2", false},
+		{"true && false", false},
+		{"true || false", true},
+		{"true && true", true},
+		{"false && false", false},
+		{"true || true", true},
+		{"false || false", false},
 	}
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
+		// fmt.Printf("%s -> %t\n", tt.input, tt.expected)
 		testBooleanObject(t, evaluated, tt.expected)
 	}
 }

@@ -214,6 +214,28 @@ func (l *Lexer) NextToken() token.Token {
 		} else {
 			tok = newToken(token.NOT, l.ch)
 		}
+	case '&':
+		if l.peekChar() == '&' {
+			//	get the current token
+			ch := l.ch
+			//	read the next one
+			l.readChar()
+			//	create the and token
+			tok = token.Token{ Type: token.AND, Literal: string(ch) + string(ch) }
+		} else {
+			tok = newToken(token.ILLEGAL, l.ch)
+		}
+	case '|':
+		if l.peekChar() == '|' {
+			//	get the current token
+			ch := l.ch
+			//	read the next one
+			l.readChar()
+			//	create the and token
+			tok = token.Token{ Type: token.OR, Literal: string(ch) + string(ch) }
+		} else {
+			tok = newToken(token.ILLEGAL, l.ch)
+		}
 	case '[':
 		tok = newToken(token.L_BRACK, l.ch)
 	case ']':

@@ -35,6 +35,8 @@ func TestNextToken(t *testing.T) {
 	};
 	/#	comments #/
 	multiplier = 4;
+	&&
+	||
 	`
 
 	tests := []struct {
@@ -136,6 +138,8 @@ func TestNextToken(t *testing.T) {
 		{token.ASSIGN, "="},
 		{token.INT, "4"},
 		{token.SEMICOLON, ";"},
+		{token.AND, "&&"},
+		{token.OR, "||"},
 		{token.EOF, ""},
 	}
 

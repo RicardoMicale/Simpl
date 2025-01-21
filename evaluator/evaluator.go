@@ -158,6 +158,42 @@ func evalStringInfixExpression(operator string, left, right object.Object) objec
 	}
 }
 
+func evalBooleanInfixExpression(operator string, left, right object.Object) object.Object {
+	//	check that the left value passed is a boolean
+	leftVal, ok := left.(*object.Boolean)
+	//	if not, throw an error
+	if !ok {
+		return newError(
+			"Left side of the operation `%s %s %s` is not valid for the %s operator.",
+			left.Type(),
+			operator,
+			right.Type(),
+			operator,
+		)
+	}
+	//	check that the right value is a boolean
+	rightVal, ok := right.(*object.Boolean)
+	//	if not, throw an error
+	if !ok {
+		return newError(
+			"Right side of the operation `%s %s %s` is not valid for the %s operator.",
+			left.Type(),
+			operator,
+			right.Type(),
+			operator,
+		)
+	}
+	//	evaluate and transform from a nativo Go bool to a Simpl Bool
+	switch operator {
+	case "&&":
+		return nativeBoolToBooleaObject(leftVal.Value && rightVal.Value)
+	case "||":
+		return nativeBoolToBooleaObject(leftVal.Value || rightVal.Value)
+	default:
+		return newError("Invalid operator: %s", operator)
+	}
+}
+
 func evalInfixExpression(
 	operator string,
 	left, right object.Object,
@@ -171,6 +207,10 @@ func evalInfixExpression(
 		return nativeBoolToBooleaObject(left == right)
 	case operator == "!=":
 		return nativeBoolToBooleaObject(left != right)
+	case operator == "&&":
+		return evalBooleanInfixExpression(operator, left, right)
+	case operator == "||":
+		return evalBooleanInfixExpression(operator, left, right)
 	case left.Type() != right.Type():
 		return newError("Type mismatch: %s %s %s", left.Type(), operator, right.Type())
 	default:
